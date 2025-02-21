@@ -6,71 +6,140 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  TablePagination,
-  Chip,
-  IconButton,
   Box,
   LinearProgress,
   TableSortLabel,
   styled,
   TextField,
   InputAdornment,
+  Chip,
+  Typography,
+  Fade,
+  Alert,
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import { format } from 'date-fns';
 
 // Styled components
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.primary.main,
-  borderBottom: `2px solid ${theme.palette.divider}`,
+  fontWeight: 600,
+  color: theme.palette.text.secondary,
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(2),
+  whiteSpace: 'nowrap',
+  '&:first-of-type': {
+    paddingLeft: theme.spacing(3),
+  },
+  '&:last-of-type': {
+    paddingRight: theme.spacing(3),
+  },
+  '& .MuiTableSortLabel-root': {
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+    '&.Mui-active': {
+      color: theme.palette.primary.main,
+      '& .MuiTableSortLabel-icon': {
+        color: theme.palette.primary.main,
+      },
+    },
+  },
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  transition: 'all 0.2s ease',
   '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: 'rgba(148, 163, 184, 0.05)',
+  },
+  '& td': {
+    padding: theme.spacing(1.5, 2),
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    '&:first-of-type': {
+      paddingLeft: theme.spacing(3),
+    },
+    '&:last-of-type': {
+      paddingRight: theme.spacing(3),
+    },
   },
   '&:hover': {
-    backgroundColor: theme.palette.action.selected,
-    transition: 'background-color 0.2s ease',
+    backgroundColor: 'rgba(99, 102, 241, 0.08)',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 3px 6px rgba(0,0,0,0.1)',
   },
-  '&:last-child td, &:last-child th': {
-    border: 0,
+  '&:last-child td': {
+    borderBottom: 0,
   },
 }));
 
-const SearchField = styled(TextField)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
-  '.MuiOutlinedInput-root': {
-    borderRadius: '12px',
-    transition: 'all 0.3s ease',
-    backgroundColor: theme.palette.background.paper,
+const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
+  height: '65vh',
+  overflow: 'auto',
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  '&::-webkit-scrollbar': {
+    width: '6px',
+    height: '6px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: 'rgba(148, 163, 184, 0.05)',
+    borderRadius: '3px',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: 'rgba(148, 163, 184, 0.15)',
+    borderRadius: '3px',
     '&:hover': {
-      backgroundColor: theme.palette.action.hover,
+      background: 'rgba(148, 163, 184, 0.25)',
+    },
+  },
+}));
+
+const StyledSearchField = styled(TextField)(({ theme }) => ({
+  marginBottom: theme.spacing(3),
+  '& .MuiOutlinedInput-root': {
+    backgroundColor: 'rgba(148, 163, 184, 0.05)',
+    borderRadius: theme.shape.borderRadius,
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      backgroundColor: 'rgba(148, 163, 184, 0.08)',
+      '& fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
+    },
+    '& fieldset': {
+      borderColor: 'rgba(148, 163, 184, 0.2)',
+      transition: 'all 0.2s ease',
     },
     '&.Mui-focused': {
-      backgroundColor: theme.palette.background.paper,
-      boxShadow: '0 0 0 2px ' + theme.palette.primary.main + '40',
+      backgroundColor: 'rgba(99, 102, 241, 0.05)',
+      '& fieldset': {
+        borderColor: theme.palette.primary.main,
+        borderWidth: '2px',
+      },
     },
+  },
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1.5, 2),
   },
 }));
 
 const StatusChip = styled(Chip)(({ theme }) => ({
-  fontWeight: 500,
-  padding: '4px 8px',
-  borderRadius: '8px',
-  '&.active': {
-    backgroundColor: theme.palette.success.light,
-    color: theme.palette.success.dark,
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  height: 24,
+  borderRadius: 12,
+  padding: theme.spacing(0, 1),
+  '&.MuiChip-colorSuccess': {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    color: '#10B981',
   },
-  '&.inactive': {
-    backgroundColor: theme.palette.error.light,
-    color: theme.palette.error.dark,
+  '&.MuiChip-colorError': {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    color: '#EF4444',
   },
-  '&.pending': {
-    backgroundColor: theme.palette.warning.light,
-    color: theme.palette.warning.dark,
+  '&.MuiChip-colorWarning': {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    color: '#F59E0B',
   },
 }));
 
@@ -87,8 +156,7 @@ type SortField = 'idSchedule' | 'startdate' | 'duration' | 'time';
 const UserDataTable = () => {
   const [data, setData] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState<SortField>('startdate');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,27 +164,31 @@ const UserDataTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const response = await fetch('http://localhost:5000/api/schedule');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const jsonData = await response.json();
+        if (!Array.isArray(jsonData)) {
+          throw new Error('Invalid data format received');
+        }
         setData(jsonData);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError(error instanceof Error ? error.message : 'An error occurred while fetching data');
+        setData([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
+    // Set up polling every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const handleSort = (field: SortField) => {
     const isAsc = sortField === field && sortDirection === 'asc';
@@ -126,7 +198,6 @@ const UserDataTable = () => {
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    setPage(0); // Reset to first page when searching
   };
 
   const formatDate = (dateString: string) => {
@@ -176,34 +247,79 @@ const UserDataTable = () => {
   if (loading) {
     return (
       <Box sx={{ width: '100%', mt: 2 }}>
-        <LinearProgress color="primary" />
+        <LinearProgress 
+          color="primary"
+          sx={{
+            height: 2,
+            borderRadius: 1,
+            '& .MuiLinearProgress-bar': {
+              borderRadius: 1,
+            },
+          }}
+        />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ width: '100%', mt: 2 }}>
+        <Alert 
+          severity="error" 
+          sx={{ 
+            borderRadius: 2,
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            color: '#EF4444',
+            '& .MuiAlert-icon': {
+              color: '#EF4444',
+            },
+          }}
+        >
+          {error}
+        </Alert>
       </Box>
     );
   }
 
   const filteredData = filterData(data);
   const sortedData = sortData(filteredData);
-  const paginatedData = sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <SearchField
-        fullWidth
-        variant="outlined"
-        placeholder="Search by ID, date, duration, time, or status..."
-        value={searchQuery}
-        onChange={handleSearch}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon color="action" />
-            </InputAdornment>
-          ),
+    <Box>
+      <Box 
+        sx={{ 
+          mb: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
         }}
-      />
-      
-      <TableContainer>
-        <Table sx={{ minWidth: 650 }} aria-label="user data table">
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography 
+            variant="body2" 
+            color="text.secondary"
+            sx={{ fontWeight: 500 }}
+          >
+            {filteredData.length} {filteredData.length === 1 ? 'entry' : 'entries'} found
+          </Typography>
+        </Box>
+        <StyledSearchField
+          fullWidth
+          variant="outlined"
+          placeholder="Search by ID, date, duration, time, or status..."
+          value={searchQuery}
+          onChange={handleSearch}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+      <StyledTableContainer>
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <StyledTableCell>
@@ -246,32 +362,36 @@ const UserDataTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedData.map((row) => (
-              <StyledTableRow key={row.idSchedule}>
-                <TableCell>{row.idSchedule}</TableCell>
-                <TableCell>{formatDate(row.startdate)}</TableCell>
-                <TableCell>{row.duration}</TableCell>
-                <TableCell>{row.time}</TableCell>
-                <TableCell>
-                  <StatusChip
-                    label={row.onoff === 1 ? 'Active' : row.onoff === 0 ? 'Inactive' : 'Pending'}
-                    className={row.onoff === 1 ? 'active' : row.onoff === 0 ? 'inactive' : 'pending'}
-                  />
+            {sortedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
+                  <Typography color="text.secondary">
+                    No data found
+                  </Typography>
                 </TableCell>
-              </StyledTableRow>
-            ))}
+              </TableRow>
+            ) : (
+              sortedData.map((row, index) => (
+                <Fade in={true} timeout={100 * (index + 1)} key={row.idSchedule}>
+                  <StyledTableRow>
+                    <TableCell sx={{ fontWeight: 500 }}>{row.idSchedule}</TableCell>
+                    <TableCell>{formatDate(row.startdate)}</TableCell>
+                    <TableCell>{row.duration}</TableCell>
+                    <TableCell>{row.time}</TableCell>
+                    <TableCell>
+                      <StatusChip
+                        label={row.onoff === 1 ? 'Active' : row.onoff === 0 ? 'Inactive' : 'Pending'}
+                        color={row.onoff === 1 ? 'success' : row.onoff === 0 ? 'error' : 'warning'}
+                        size="small"
+                      />
+                    </TableCell>
+                  </StyledTableRow>
+                </Fade>
+              ))
+            )}
           </TableBody>
         </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25, 50]}
-        component="div"
-        count={filteredData.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      </StyledTableContainer>
     </Box>
   );
 };

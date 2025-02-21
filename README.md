@@ -1,6 +1,6 @@
 # Plant Watering Admin Dashboard
 
-A modern React-based admin dashboard for managing plant watering schedules and monitoring system data. The dashboard provides real-time monitoring of water flow, battery voltage, and scheduling capabilities.
+A modern React-based admin dashboard for managing plant watering schedules and monitoring system data. The dashboard provides real-time monitoring of water flow, battery voltage, and scheduling capabilities. The system tracks two types of watering events: start and stop.
 
 ## Features
 
