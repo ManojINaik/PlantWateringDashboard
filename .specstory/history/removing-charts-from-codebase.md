@@ -2109,6 +2109,340 @@ how status are checked in  this project
 
 _**Assistant**_
 
+Looking at the code, the status is determined by the `onoff` field in the UserData interface. Here's how the status checks work:
+
+```typescript
+// From the UserData interface:
+interface UserData {
+  idSchedule: number;
+  startdate: string;
+  duration: number;
+  time: string;
+  onoff: number | null;  // This field determines the status
+}
+
+// Status is checked in the StatusChip component like this:
+<StatusChip
+  label={row.onoff === 1 ? 'Active' : row.onoff === 0 ? 'Inactive' : 'Pending'}
+  color={row.onoff === 1 ? 'success' : row.onoff === 0 ? 'error' : 'warning'}
+  size="small"
+/>
+```
+
+The status logic works as follows:
+1. `onoff === 1` → "Active" status (green color)
+2. `onoff === 0` → "Inactive" status (red color)
+3. `onoff === null` → "Pending" status (yellow/orange color)
+
+The status is also searchable in the filter function:
+```typescript
+const filterData = (data: UserData[]) => {
+  if (!searchQuery) return data;
+  
+  const query = searchQuery.toLowerCase();
+  return data.filter((row) => {
+    return (
+      // ... other filters ...
+      (row.onoff === 1 && 'active'.includes(query)) ||    // Search for "active"
+      (row.onoff === 0 && 'inactive'.includes(query)) ||  // Search for "inactive"
+      (row.onoff === null && 'pending'.includes(query))   // Search for "pending"
+    );
+  });
+};
+```
+
+Let me check the network logs to see how this data is coming from the API:
+
+---
+
+_****_
+
+
+
+---
+
+_****_
+
+
+
+Looking at the network logs, I can see that the status data comes from the `/api/schedule` endpoint. The response shows that each schedule entry has an `onoff` field that can have three possible values:
+
+1. `1` - Active status (shown with a green chip)
+2. `0` - Inactive status (shown with a red chip)
+3. `null` - Pending status (shown with a yellow/orange chip)
+
+The status is visually represented using Material-UI's `Chip` component with custom styling:
+
+```typescript
+const StatusChip = styled(Chip)(({ theme }) => ({
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  height: 24,
+  borderRadius: 12,
+  padding: theme.spacing(0, 1),
+  '&.MuiChip-colorSuccess': {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    color: '#10B981',  // Green for Active
+  },
+  '&.MuiChip-colorError': {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    color: '#EF4444',  // Red for Inactive
+  },
+  '&.MuiChip-colorWarning': {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    color: '#F59E0B',  // Yellow/Orange for Pending
+  },
+}));
+```
+
+The data is automatically refreshed every 30 seconds through a polling mechanism:
+
+```typescript
+useEffect(() => {
+  const fetchData = async () => {
+    // ... fetch logic ...
+  };
+
+  fetchData();
+  // Set up polling every 30 seconds
+  const interval = setInterval(fetchData, 30000);
+  return () => clearInterval(interval);
+}, []);
+```
+
+Additionally, users can search for schedules by their status using the search field, which filters the data based on the status keywords "active", "inactive", or "pending".
+
+Let me also check if there's any additional status handling in the backend by searching for relevant code:
+
+---
+
+_****_
+
+<details>
+            <summary>Searched codebase "how is onoff status handled in backend" • **25** results</summary>
+        
+| File | Lines |
+|------|-------|
+| `.specstory/history/removing-charts-from-codebase.md` | L1178-1242 |
+| `frontend/src/components/UserDataTable.tsx` | L472-516 |
+| `backend/server.js` | L70-111 |
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L2696-2731 |
+| `backend/server.js` | L111-170 |
+| `frontend/src/components/UserDataTable.tsx` | L317-372 |
+| `backend/server.js` | L221-233 |
+| `frontend/src/components/UserDataTable.tsx` | L152-160 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L973-1019 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L973-1019 |
+| `backend/server.js` | L33-70 |
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L3342-3400 |
+| `frontend/src/components/ScheduleTable.tsx` | L64-99 |
+| `frontend/src/components/ScheduleTable.tsx` | L64-99 |
+| `.specstory/history/data-parsing-issue-resolution.md` | L1429-1490 |
+| `.specstory/history/data-parsing-issue-resolution.md` | L587-638 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `frontend/src/components/UserDataTable.tsx` | L72-152 |
+| `.specstory/history/plant-watering-dashboard-fix.md` | L1169-1227 |
+| `.specstory/history/plant-watering-dashboard-fix.md` | L1169-1227 |
+| `.specstory/history/data-parsing-issue-resolution.md` | L2790-2877 |
+| `frontend/src/components/ScheduleTable.tsx` | L1-23 |
+
+</details>
+
+---
+
+_****_
+
+
+
+Let me also check if there are any backend routes that handle status changes:
+
+---
+
+_****_
+
+<details>
+            <summary>Searched codebase "update schedule status onoff" • **25** results</summary>
+        
+| File | Lines |
+|------|-------|
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L2696-2731 |
+| `backend/server.js` | L221-233 |
+| `frontend/src/components/ScheduleTable.tsx` | L64-99 |
+| `frontend/src/components/ScheduleTable.tsx` | L64-99 |
+| `Admin_Dashpage/Dump20250215/greenbalconydrip_schedule.sql` | L1-58 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L973-1019 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L973-1019 |
+| `frontend/src/components/ScheduleTable.tsx` | L1-23 |
+| `frontend/src/components/ScheduleTable.tsx` | L1-23 |
+| `frontend/src/components/UserDataTable.tsx` | L363-397 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L863-925 |
+| `.specstory/history/verification-process-using-mcp-tools.md` | L863-925 |
+| `frontend/src/components/UserDataTable.tsx` | L152-154 |
+| `frontend/src/components/UserDataTable.tsx` | L320-363 |
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L2333-2385 |
+| `frontend/src/components/ScheduleTable.tsx` | L23-64 |
+| `frontend/src/components/ScheduleTable.tsx` | L23-64 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/user-data-table-creation.md` | L1431-1475 |
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L2385-2500 |
+| `frontend/src/components/UserDataTable.tsx` | L209-282 |
+| `.specstory/history/admin-dashboard-sensor-data-fix.md` | L2500-2553 |
+| `frontend/src/components/ScheduleTable.tsx` | L99-101 |
+
+</details>
+
+---
+
+_****_
+
+
+
+Based on all the information gathered, here's a comprehensive explanation of how status is checked and managed in this project:
+
+1. **Database Structure**
+The status is stored in the `schedule` table with an `onoff` column that can have three values:
+- `1` = Active
+- `0` = Inactive
+- `null` = Pending
+
+2. **Backend API**
+The status is retrieved through the `/api/schedule` endpoint:
+```javascript
+app.get('/api/schedule', async (req, res) => {
+  try {
+    const [rows] = await pool.promise().query(
+      'SELECT idSchedule, startdate, duration, time, onoff FROM schedule ORDER BY startdate DESC, time DESC'
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching schedule data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+3. **Frontend Display**
+The status is displayed in two components:
+
+a. **UserDataTable Component** (Main table):
+```typescript
+<StatusChip
+  label={row.onoff === 1 ? 'Active' : row.onoff === 0 ? 'Inactive' : 'Pending'}
+  color={row.onoff === 1 ? 'success' : row.onoff === 0 ? 'error' : 'warning'}
+  size="small"
+/>
+```
+
+b. **ScheduleTable Component** (Simplified table):
+```typescript
+<Typography
+  color={row.onoff === 1 ? 'success.main' : 'error.main'}
+  fontWeight="bold"
+>
+  {row.onoff === 1 ? 'Active' : 'Inactive'}
+</Typography>
+```
+
+4. **Status Styling**
+The status is visually represented using Material-UI's `Chip` component with custom styling:
+```typescript
+const StatusChip = styled(Chip)(({ theme }) => ({
+  fontWeight: 600,
+  fontSize: '0.75rem',
+  height: 24,
+  borderRadius: 12,
+  padding: theme.spacing(0, 1),
+  '&.MuiChip-colorSuccess': {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    color: '#10B981',  // Green for Active
+  },
+  '&.MuiChip-colorError': {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    color: '#EF4444',  // Red for Inactive
+  },
+  '&.MuiChip-colorWarning': {
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    color: '#F59E0B',  // Yellow/Orange for Pending
+  },
+}));
+```
+
+5. **Status Updates**
+- The data is automatically refreshed every 30 seconds through a polling mechanism
+- Users can search for schedules by their status using keywords "active", "inactive", or "pending"
+- The status can be sorted along with other fields in the table
+
+6. **Data Filtering**
+The status is included in the search functionality:
+```typescript
+const filterData = (data: UserData[]) => {
+  if (!searchQuery) return data;
+  
+  const query = searchQuery.toLowerCase();
+  return data.filter((row) => {
+    return (
+      // ... other filters ...
+      (row.onoff === 1 && 'active'.includes(query)) ||
+      (row.onoff === 0 && 'inactive'.includes(query)) ||
+      (row.onoff === null && 'pending'.includes(query))
+    );
+  });
+};
+```
+
+The system provides a clear visual indication of schedule status through color-coded chips and text, with automatic updates and search/filter capabilities to help users manage their schedules effectively.
+
+---
+
+_**User**_
+
+fix
+
+---
+
+_**Assistant**_
+
+I notice you're trying to run `git filter-repo` to remove the `.specstory` directory from your repository history, but getting an error because it's not a fresh clone. Here's how to fix this:
+
+1. First, let's backup your current repository just in case:
+
+---
+
+_****_
+
+```bash
+git branch backup-main main
+```
+
+```
+PS M:\project\internship\plant-watering-admin-dashboard> git branch backup-main
+main
+
+```
+
+---
+
+_****_
+
+
+
+2. Now, let's create a fresh clone of your repository in a temporary location:
+
+---
+
+_****_
+
+
+
+---
+
+_****_
+
 
 
 ---
