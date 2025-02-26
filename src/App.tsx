@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Leaf, 
   Droplets, 
@@ -11,23 +11,23 @@ import {
 } from 'lucide-react';
 
 // Types
-type Status = 'pending' | 'completed' | 'nodata';
+type Status = 'pending' | 'completed' | 'no data';
 type Schedule = {
-  id: number;
-  time: string;
-  duration: number;
-  yesterdayStatus: Status;
-  todayStatus: Status;
-  plantName: string;
+  ID: number;
+  schedule_time: string;
+  duration: string;
+  yesterday_flow: Status;
+  today_flow: Status;
+  active: boolean;
+  weather_enabled: boolean;
 };
 
 function App() {
-  const [schedules] = useState<Schedule[]>([
-    { id: 1, time: '08:00', duration: 5, yesterdayStatus: 'completed', todayStatus: 'pending', plantName: 'Snake Plant' },
-    { id: 2, time: '10:30', duration: 3, yesterdayStatus: 'completed', todayStatus: 'completed', plantName: 'Peace Lily' },
-    { id: 3, time: '14:00', duration: 7, yesterdayStatus: 'nodata', todayStatus: 'pending', plantName: 'Monstera' },
-    { id: 4, time: '16:30', duration: 4, yesterdayStatus: 'completed', todayStatus: 'pending', plantName: 'Spider Plant' },
-  ]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPlants, setTotalPlants] = useState<number>(0);
+  const [activeSchedules, setActiveSchedules] = useState<number>(0);
 
   const [currentTime] = useState(new Date().toLocaleTimeString());
   const [currentDate] = useState(new Date().toLocaleDateString('en-US', { 
@@ -37,12 +37,47 @@ function App() {
     day: 'numeric' 
   }));
 
+  useEffect(() => {
+    const fetchWateringData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:5000/api/watering-data');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setSchedules(data);
+        setTotalPlants(data.length);
+        setActiveSchedules(data.filter((schedule: Schedule) => schedule.active).length);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching watering data:', err);
+        setError('Failed to load watering data. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchWateringData();
+  }, []);
+
   const getStatusColor = (status: Status) => {
     switch (status) {
       case 'completed': return 'bg-[#81C784]';
       case 'pending': return 'bg-yellow-400';
-      case 'nodata': return 'bg-gray-400';
+      case 'no data': return 'bg-gray-400';
       default: return 'bg-gray-400';
+    }
+  };
+
+  // Format the schedule time to show only the time part
+  const formatTime = (dateTimeString: string) => {
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (err) {
+      return dateTimeString;
     }
   };
 
@@ -80,7 +115,7 @@ function App() {
                 </div>
                 <div>
                   <p className="text-sm opacity-80">Total Plants</p>
-                  <p className="text-2xl font-bold">24</p>
+                  <p className="text-2xl font-bold">{totalPlants}</p>
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 flex items-center space-x-4">
@@ -89,7 +124,7 @@ function App() {
                 </div>
                 <div>
                   <p className="text-sm opacity-80">Active Schedules</p>
-                  <p className="text-2xl font-bold">12</p>
+                  <p className="text-2xl font-bold">{activeSchedules}</p>
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 flex items-center space-x-4">
@@ -126,60 +161,84 @@ function App() {
               </div>
             </div>
 
+            {/* Loading and Error States */}
+            {loading && (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2E7D32] mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading watering data...</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+                <p>{error}</p>
+              </div>
+            )}
+
             {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                      <div className="flex items-center space-x-1 cursor-pointer">
-                        <span>Time</span>
-                        <div className="flex flex-col">
-                          <ChevronUp className="h-3 w-3" />
-                          <ChevronDown className="h-3 w-3" />
+            {!loading && !error && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        <div className="flex items-center space-x-1 cursor-pointer">
+                          <span>Time</span>
+                          <div className="flex flex-col">
+                            <ChevronUp className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
+                          </div>
                         </div>
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Plant Name</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Duration (min)</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Yesterday's Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Today's Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {schedules.map((schedule) => (
-                    <tr key={schedule.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-800">{schedule.time}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800">{schedule.plantName}</td>
-                      <td className="px-6 py-4 text-sm text-gray-800">{schedule.duration}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(schedule.yesterdayStatus)} text-white`}>
-                          {schedule.yesterdayStatus}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(schedule.todayStatus)} text-white`}>
-                          {schedule.todayStatus}
-                        </span>
-                      </td>
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Duration</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Yesterday's Status</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Today's Status</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">Weather Enabled</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {schedules.map((schedule) => (
+                      <tr key={schedule.ID} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="px-6 py-4 text-sm text-gray-800">{formatTime(schedule.schedule_time)}</td>
+                        <td className="px-6 py-4 text-sm text-gray-800">{schedule.ID}</td>
+                        <td className="px-6 py-4 text-sm text-gray-800">{schedule.duration}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(schedule.yesterday_flow)} text-white`}>
+                            {schedule.yesterday_flow}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(schedule.today_flow)} text-white`}>
+                            {schedule.today_flow}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-800">
+                          {schedule.weather_enabled ? 'Yes' : 'No'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* Pagination */}
-            <div className="flex justify-between items-center mt-6">
-              <p className="text-sm text-gray-600">Showing 1 to 4 of 4 entries</p>
-              <div className="flex space-x-2">
-                <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>
-                  Previous
-                </button>
-                <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>
-                  Next
-                </button>
+            {!loading && !error && (
+              <div className="flex justify-between items-center mt-6">
+                <p className="text-sm text-gray-600">
+                  Showing 1 to {schedules.length} of {schedules.length} entries
+                </p>
+                <div className="flex space-x-2">
+                  <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>
+                    Previous
+                  </button>
+                  <button className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>
+                    Next
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
       </div>

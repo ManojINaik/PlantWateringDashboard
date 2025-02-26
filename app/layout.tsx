@@ -5,8 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Plant Watering Admin Dashboard",
-  description: "Real-time monitoring of plant watering schedules and status",
+  title: "GreenBalcony | Plant Watering Admin Dashboard",
+  description: "Professional monitoring and management of plant watering schedules and status in real-time",
+  keywords: "plant watering, IoT dashboard, smart gardening, plant management",
+  authors: [{ name: "GreenBalcony" }],
+  viewport: "width=device-width, initial-scale=1.0",
 };
 
 export default function RootLayout({
