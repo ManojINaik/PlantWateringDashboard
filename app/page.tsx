@@ -148,7 +148,7 @@ export default function Home() {
           <div className="flex items-center justify-between animate-slideUp">
             <SearchBar onSearch={handleSearch} />
             
-            <div className="flex space-x-3">
+            {/* <div className="flex space-x-3">
               <button className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-all">
                 <FaPlus className="text-sm" />
                 <span className="text-sm font-medium">Add Schedule</span>
@@ -157,7 +157,7 @@ export default function Home() {
               <button className="p-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg shadow-sm border border-gray-100 transition-all">
                 <FaEllipsisV className="text-sm" />
               </button>
-            </div>
+            </div> */}
           </div>
           
           {/* Info cards */}

@@ -18,10 +18,10 @@ const Sidebar = () => {
   
   const menuItems = [
     { id: 'Dashboard', label: 'Dashboard', icon: <FaHome className="text-xl" />, href: '/' },
-    { id: 'Plants', label: 'Plants', icon: <FaLeaf className="text-xl" />, href: '#' },
-    { id: 'Schedules', label: 'Schedules', icon: <FaCalendarAlt className="text-xl" />, href: '#' },
-    { id: 'Analytics', label: 'Analytics', icon: <FaChartLine className="text-xl" />, href: '#' },
-    { id: 'Settings', label: 'Settings', icon: <FaCog className="text-xl" />, href: '#' },
+    // { id: 'Plants', label: 'Plants', icon: <FaLeaf className="text-xl" />, href: '#' },
+    // { id: 'Schedules', label: 'Schedules', icon: <FaCalendarAlt className="text-xl" />, href: '#' },
+    // { id: 'Analytics', label: 'Analytics', icon: <FaChartLine className="text-xl" />, href: '#' },
+    // { id: 'Settings', label: 'Settings', icon: <FaCog className="text-xl" />, href: '#' },
   ];
 
   return (
@@ -51,7 +51,7 @@ const Sidebar = () => {
         </div>
         <div className="flex-1">
           <h4 className="font-medium text-sm text-white/90">Admin User</h4>
-          <p className="text-xs text-white/60">Plant Manager</p>
+          <p className="text-xs text-white/60">Ukshati admin</p>
         </div>
         <div className="relative">
           <FaBell className="text-white/70 hover:text-white transition-colors" />
@@ -98,10 +98,10 @@ const Sidebar = () => {
           href="#" 
           className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-red-500/20 transition-all text-white/80 hover:text-white group"
         >
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <FaSignOutAlt className="text-xl text-red-400 group-hover:text-red-300" />
             <span>Logout</span>
-          </div>
+          </div> */}
           <FaChevronRight className="text-xs opacity-0 group-hover:opacity-70" />
         </Link>
       </div>
