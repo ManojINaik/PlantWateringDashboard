@@ -49,19 +49,6 @@ const TableRowMemo = memo(({ row, getStatusBadge, formatTime }: {
     <TableCell className="px-6 py-4">
       {getStatusBadge(row.today_flow)}
     </TableCell>
-    <TableCell className="px-6 py-4">
-      {row.weather_enabled ? (
-        <Badge variant="success" className="flex items-center gap-1 font-normal">
-          <FaCloud className="text-xs" />
-          <span>Enabled</span>
-        </Badge>
-      ) : (
-        <Badge variant="outline" className="flex items-center gap-1 font-normal">
-          <FaBan className="text-xs" />
-          <span>Disabled</span>
-        </Badge>
-      )}
-    </TableCell>
   </TableRow>
 ), (prevProps, nextProps) => {
   // Only re-render if any of these properties change
@@ -69,8 +56,7 @@ const TableRowMemo = memo(({ row, getStatusBadge, formatTime }: {
     prevProps.row.schedule_time === nextProps.row.schedule_time &&
     prevProps.row.duration === nextProps.row.duration &&
     prevProps.row.yesterday_flow === nextProps.row.yesterday_flow &&
-    prevProps.row.today_flow === nextProps.row.today_flow &&
-    prevProps.row.weather_enabled === nextProps.row.weather_enabled;
+    prevProps.row.today_flow === nextProps.row.today_flow;
 });
 
 export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
@@ -203,7 +189,7 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
                 onClick={() => handleSort('yesterday_flow')}
               >
                 <div className="flex items-center whitespace-nowrap font-medium">
-                  Yesterday Status {getSortIcon('yesterday_flow')}
+                  Previous Day Status {getSortIcon('yesterday_flow')}
                 </div>
               </TableHead>
               <TableHead 
@@ -211,12 +197,7 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
                 onClick={() => handleSort('today_flow')}
               >
                 <div className="flex items-center whitespace-nowrap font-medium">
-                  Today Status {getSortIcon('today_flow')}
-                </div>
-              </TableHead>
-              <TableHead className="px-6 py-3.5">
-                <div className="flex items-center whitespace-nowrap font-medium">
-                  Weather Enabled
+                  Latest Day Status {getSortIcon('today_flow')}
                 </div>
               </TableHead>
             </TableRow>
@@ -233,7 +214,7 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                   No watering schedules found
                 </TableCell>
               </TableRow>

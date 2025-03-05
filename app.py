@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 import logging
 from dotenv import load_dotenv
@@ -79,13 +79,6 @@ def get_flow_status(schedule_id, date):
     """
     Determine flow status for a specific schedule and date
     Returns: 'completed', 'pending', or 'no data'
-    
-    Cases:
-    1. Normal watering: getconfigrun success followed by W0/W1 in speedreading -> 'completed'
-    2. Direct speedreading with no getconfigrun but with W0/W1 -> 'completed'
-    3. getconfigrun success but no W0/W1 in speedreading -> 'pending'
-    4. No getconfigrun success and no W0/W1 in speedreading -> 'no data'
-    5. Speedreading with E2 parameter (error) but with W0/W1 -> 'completed'
     """
     conn = get_db_connection()
     if not conn:
@@ -97,7 +90,69 @@ def get_flow_status(schedule_id, date):
     try:
         logging.info(f"Checking flow status for schedule_id {schedule_id} on date {date}")
         
-        # Check for getconfigrun success
+        # Get schedule time for this ID
+        cursor.execute("""
+            SELECT TIME(time) as schedule_time
+            FROM schedule
+            WHERE idSchedule = %s
+        """, (schedule_id,))
+        schedule_result = cursor.fetchone()
+        
+        if not schedule_result:
+            logging.error(f"No schedule found for ID {schedule_id}")
+            return 'no data'
+            
+        schedule_time = schedule_result['schedule_time']
+        
+        # Convert date string to datetime.date if it's not already
+        if isinstance(date, str):
+            date = datetime.strptime(date, '%Y-%m-%d').date()
+        
+        # Get current date and time in UTC using timezone-aware approach
+        current_utc = datetime.now(timezone.utc)
+        
+        # Check for watering events in speedreading entries with corrected patterns
+        cursor.execute("""
+            SELECT reading, createdat
+            FROM miscellaneous
+            WHERE idMiscellaneous = %s
+            AND subject = 'speedreading'
+            AND DATE(createdat) = %s
+            AND (
+                reading LIKE '%W0:%'
+                OR reading LIKE '%W1:%'
+                OR reading LIKE '%:W0:%'
+                OR reading LIKE '%:W1:%'
+            )
+            ORDER BY createdat DESC
+        """, (schedule_id, date))
+        
+        watering_entries = cursor.fetchall()
+        
+        # More detailed parsing of watering events
+        has_watering_event = False
+        for entry in watering_entries:
+            reading = entry['reading']
+            parts = reading.split('~')
+            for part in parts:
+                if ':W0:' in part or ':W1:' in part or 'W0:' in part or 'W1:' in part:
+                    has_watering_event = True
+                    logging.info(f"Found watering event in reading: {part}")
+                    break
+            if has_watering_event:
+                break
+        
+        logging.info(f"Schedule {schedule_id} on {date}: has watering event = {has_watering_event}")
+        
+        # Find the latest date in the database to determine if this is "today"
+        cursor.execute("""
+            SELECT DATE(MAX(createdat)) as latest_date
+            FROM miscellaneous
+        """)
+        latest_date_result = cursor.fetchone()
+        latest_date = latest_date_result['latest_date'] if latest_date_result else current_utc.date()
+        
+        # Check for getconfigrun success - this determines if the device attempted to run the schedule
         cursor.execute("""
             SELECT COUNT(*) as config_count
             FROM miscellaneous
@@ -112,41 +167,53 @@ def get_flow_status(schedule_id, date):
         
         logging.info(f"Schedule {schedule_id} on {date}: getconfigrun success = {has_config_success}")
         
-        # Check for watering events in speedreading entries
+        # If we have a watering event, it's definitely completed
+        if has_watering_event:
+            status = 'completed'
+            logging.info(f"Status for schedule {schedule_id} on {date}: completed (watering event found)")
+            return status
+            
+        # Check if there was any activity at all for this schedule_id on this date
         cursor.execute("""
-            SELECT reading
+            SELECT COUNT(*) as activity_count
             FROM miscellaneous
             WHERE idMiscellaneous = %s
-            AND subject = 'speedreading'
             AND DATE(createdat) = %s
         """, (schedule_id, date))
         
-        speedreading_entries = cursor.fetchall()
-        logging.info(f"Found {len(speedreading_entries)} speedreading entries for schedule {schedule_id} on {date}")
+        activity_result = cursor.fetchone()
+        has_any_activity = activity_result['activity_count'] > 0
         
-        # Parse speedreading entries to find W0 or W1
-        has_watering_event = False
-        for entry in speedreading_entries:
-            if parse_reading_data(entry['reading']):
-                has_watering_event = True
-                break
+        # Convert schedule_time to datetime.time for comparison
+        schedule_time_obj = datetime.strptime(str(schedule_time), '%H:%M:%S').time()
         
-        logging.info(f"Schedule {schedule_id} on {date}: has watering event = {has_watering_event}")
-        
-        # Determine status based on config and watering events
-        if has_config_success:
-            # Case 1 & 3: getconfigrun success exists
-            status = 'completed' if has_watering_event else 'pending'
-        else:
-            # Case 2 & 4: No getconfigrun success
-            if has_watering_event:
-                # Case 2: Direct speedreading with watering events
-                status = 'completed'
+        # For current date (latest in database), check if time has passed
+        if date == latest_date:
+            # Get the latest time for this date
+            cursor.execute("""
+                SELECT TIME(MAX(createdat)) as latest_time
+                FROM miscellaneous
+                WHERE DATE(createdat) = %s
+            """, (date,))
+            latest_time_result = cursor.fetchone()
+            latest_time = datetime.strptime(str(latest_time_result['latest_time']), '%H:%M:%S').time() if latest_time_result and latest_time_result['latest_time'] else current_utc.time()
+            
+            # If schedule time has passed for today and we have any activity, mark as pending
+            if latest_time > schedule_time_obj:
+                status = 'pending'
+                logging.info(f"Status for schedule {schedule_id} on {date}: pending (time has passed, no watering event)")
             else:
-                # Case 4: No getconfigrun and no watering events
                 status = 'no data'
+                logging.info(f"Status for schedule {schedule_id} on {date}: no data (schedule time not yet reached)")
+        else:
+            # For past dates, if we have any activity, mark as pending
+            if has_any_activity:
+                status = 'pending'
+                logging.info(f"Status for schedule {schedule_id} on past date {date}: pending (past date with activity)")
+            else:
+                status = 'no data'
+                logging.info(f"Status for schedule {schedule_id} on past date {date}: no data (no activity found)")
         
-        logging.info(f"Final status for schedule {schedule_id} on {date}: {status}")
         return status
         
     except Exception as e:
@@ -172,33 +239,62 @@ def get_watering_data():
     try:
         logging.info("Processing request to /api/watering-data")
         
-        # Get all active schedules
+        # Get all active schedules first
         cursor.execute("""
             SELECT 
-                idSchedule,
-                CONCAT(DATE(startdate), ' ', TIME(time)) as schedule_time,
-                CONCAT(duration, ' min') as duration,
-                onoff,
-                weather
-            FROM schedule
-            WHERE onoff = 1
-            ORDER BY time
+                s.idSchedule,
+                CONCAT(DATE(s.startdate), ' ', TIME(s.time)) as schedule_time,
+                CONCAT(s.duration, ' min') as duration,
+                s.onoff,
+                s.weather,
+                (
+                    SELECT m.idMiscellaneous 
+                    FROM miscellaneous m 
+                    WHERE m.subject IN ('getconfigrun', 'speedreading')
+                    AND m.idMiscellaneous = s.idSchedule
+                    LIMIT 1
+                ) as misc_id
+            FROM schedule s
+            WHERE s.onoff = 1
+            ORDER BY s.time
         """)
         
         schedules = cursor.fetchall()
+        if not schedules:
+            logging.warning("No active schedules found")
+            return jsonify([])
+            
         logging.info(f"Retrieved {len(schedules)} active schedules from database")
         
-        today = datetime.now().date()
-        yesterday = today - timedelta(days=1)
+        # Find the latest date in the miscellaneous table instead of using current date
+        cursor.execute("""
+            SELECT DATE(MAX(createdat)) as latest_date
+            FROM miscellaneous
+        """)
+        latest_date_result = cursor.fetchone()
+        
+        if not latest_date_result or not latest_date_result['latest_date']:
+            # Fallback to current date if no data found
+            current_utc = datetime.now(timezone.utc)
+            today = current_utc.date()
+            yesterday = today - timedelta(days=1)
+            logging.warning("No data found in miscellaneous table, using current date")
+        else:
+            # Use latest date as "today" and previous date as "yesterday"
+            today = latest_date_result['latest_date']
+            yesterday = today - timedelta(days=1)
+            logging.info(f"Using latest date from database: {today} as 'today' and {yesterday} as 'yesterday'")
         
         result = []
         for schedule in schedules:
             try:
                 schedule_id = schedule['idSchedule']
+                # Use schedule_id for both cases since they should be the same
+                misc_id = schedule_id
                 
-                # Get flow status for yesterday and today
-                yesterday_flow = get_flow_status(schedule_id, yesterday)
-                today_flow = get_flow_status(schedule_id, today)
+                # Get flow status using the schedule ID
+                yesterday_flow = get_flow_status(misc_id, yesterday)
+                today_flow = get_flow_status(misc_id, today)
                 
                 # Create schedule data object
                 schedule_data = {
@@ -214,15 +310,15 @@ def get_watering_data():
                 
             except Exception as e:
                 logging.error(f"Error processing schedule {schedule.get('idSchedule', 'unknown')}: {str(e)}")
-                # Continue with next schedule instead of failing the entire request
                 continue
             
         logging.info(f"Successfully retrieved and processed {len(result)} schedules")
         return jsonify(result)
         
     except Exception as e:
-        logging.error(f"Error in get_watering_data: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        error_msg = f"Error in get_watering_data: {str(e)}"
+        logging.error(error_msg)
+        return jsonify({'error': error_msg}), 500
     finally:
         cursor.close()
         conn.close()

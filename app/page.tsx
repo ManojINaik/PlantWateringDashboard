@@ -113,8 +113,8 @@ export default function Home() {
       }, 0) / data.length).toFixed(1)
     : "0.0";
     
-  // Count completed watering events for today
-  const completedToday = data.filter(item => item.today_flow === 'completed').length;
+  // Count completed watering events for the latest day
+  const completedLatest = data.filter(item => item.today_flow === 'completed').length;
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50">
@@ -176,8 +176,8 @@ export default function Home() {
             />
             <Card3D
               icon={<FaTint className="text-white" />}
-              title="Completed Today"
-              value={`${completedToday}/${totalSchedules}`}
+              title="Completed (Latest)"
+              value={`${completedLatest}/${totalSchedules}`}
               color="accent"
             />
           </div>
