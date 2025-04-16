@@ -8,10 +8,10 @@ import {
   TableRow,
 } from "./ui/table"
 import { Badge } from "./ui/badge"
-import { FaSort, FaSortUp, FaSortDown, FaSync, FaCheck, FaClock, FaBan, FaCloud } from 'react-icons/fa'
+import { FaSort, FaSortUp, FaSortDown, FaSync, FaCheck, FaClock, FaBan, FaCloud, FaWater } from 'react-icons/fa'
 
 interface WateringData {
-  ID: number
+  idMiscellaneous: number
   schedule_time: string
   duration: string
   yesterday_flow: 'completed' | 'pending' | 'no data'
@@ -25,7 +25,7 @@ interface WateringTableProps {
   onRefresh: () => void
 }
 
-type SortField = 'ID' | 'schedule_time' | 'duration' | 'yesterday_flow' | 'today_flow'
+type SortField = 'idMiscellaneous' | 'schedule_time' | 'duration' | 'yesterday_flow' | 'today_flow'
 type SortDirection = 'asc' | 'desc'
 
 // Memoized table row component for better performance
@@ -34,15 +34,22 @@ const TableRowMemo = memo(({ row, getStatusBadge, formatTime }: {
   getStatusBadge: (status: string) => JSX.Element,
   formatTime: (dateTimeString: string) => string
 }) => (
-  <TableRow className="hover:bg-gray-50/80 transition-colors group">
+  <TableRow className="hover:bg-gray-50/90 transition-all group border-b border-gray-100/60">
     <TableCell className="font-medium px-6 py-4">
       <div className="flex items-center">
         <div className="w-1.5 h-1.5 rounded-full bg-green-500 mr-2.5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        {row.ID}
+        {row.idMiscellaneous}
       </div>
     </TableCell>
-    <TableCell className="px-6 py-4">{formatTime(row.schedule_time)}</TableCell>
-    <TableCell className="px-6 py-4">{row.duration}</TableCell>
+    <TableCell className="px-6 py-4">
+      <div className="flex items-center">
+        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3 text-green-600">
+          <FaWater className="text-xs" />
+        </div>
+        <span>{formatTime(row.schedule_time)}</span>
+      </div>
+    </TableCell>
+    <TableCell className="px-6 py-4 font-medium">{row.duration}</TableCell>
     <TableCell className="px-6 py-4">
       {getStatusBadge(row.yesterday_flow)}
     </TableCell>
@@ -52,7 +59,7 @@ const TableRowMemo = memo(({ row, getStatusBadge, formatTime }: {
   </TableRow>
 ), (prevProps, nextProps) => {
   // Only re-render if any of these properties change
-  return prevProps.row.ID === nextProps.row.ID &&
+  return prevProps.row.idMiscellaneous === nextProps.row.idMiscellaneous &&
     prevProps.row.schedule_time === nextProps.row.schedule_time &&
     prevProps.row.duration === nextProps.row.duration &&
     prevProps.row.yesterday_flow === nextProps.row.yesterday_flow &&
@@ -61,7 +68,7 @@ const TableRowMemo = memo(({ row, getStatusBadge, formatTime }: {
 
 export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
   const [data, setData] = useState<WateringData[]>(initialData)
-  const [sortField, setSortField] = useState<SortField>('ID')
+  const [sortField, setSortField] = useState<SortField>('idMiscellaneous')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
   const [refreshing, setRefreshing] = useState(false)
 
@@ -86,22 +93,28 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
     switch (status.toLowerCase()) {
       case 'completed':
         return (
-          <Badge variant="success" className="flex items-center gap-1 font-normal">
-            <FaCheck className="text-xs" />
+          <Badge variant="success" className="flex items-center gap-1.5 font-normal px-3 py-1.5 rounded-full text-xs">
+            <div className="p-1 bg-green-200 rounded-full">
+              <FaCheck className="text-xs text-green-700" />
+            </div>
             <span>Completed</span>
           </Badge>
         )
       case 'pending':
         return (
-          <Badge variant="warning" className="flex items-center gap-1 font-normal">
-            <FaClock className="text-xs" />
+          <Badge variant="warning" className="flex items-center gap-1.5 font-normal px-3 py-1.5 rounded-full text-xs">
+            <div className="p-1 bg-amber-200 rounded-full">
+              <FaClock className="text-xs text-amber-700" />
+            </div>
             <span>Pending</span>
           </Badge>
         )
       default:
         return (
-          <Badge variant="outline" className="flex items-center gap-1 font-normal">
-            <FaBan className="text-xs" />
+          <Badge variant="outline" className="flex items-center gap-1.5 font-normal px-3 py-1.5 rounded-full text-xs">
+            <div className="p-1 bg-gray-200 rounded-full">
+              <FaBan className="text-xs text-gray-700" />
+            </div>
             <span>No Data</span>
           </Badge>
         )
@@ -124,6 +137,13 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
       setData(initialData)
     }
   }, [initialData])
+
+  // Handle refresh with animation
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true)
+    onRefresh()
+    setTimeout(() => setRefreshing(false), 1000)
+  }, [onRefresh])
 
   // Memoized sorting logic
   const sortedData = React.useMemo(() => {
@@ -155,17 +175,27 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
   }, [data, sortField, sortDirection])
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-gray-100 bg-white/80 backdrop-blur-sm">
+    <div className="relative overflow-hidden rounded-xl border border-gray-100/80 bg-white/90 backdrop-blur-sm shadow-soft-xl">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100/80">
+        <h3 className="font-semibold text-gray-800">Plant Watering Schedule</h3>
+        <button 
+          onClick={handleRefresh}
+          className="p-2 rounded-full hover:bg-gray-100 transition-all text-gray-500 hover:text-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/30"
+          disabled={refreshing}
+        >
+          <FaSync className={`${refreshing ? 'animate-spin text-green-600' : ''}`} />
+        </button>
+      </div>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-gray-50/80">
             <TableRow>
               <TableHead 
                 className="hover:bg-gray-100/80 cursor-pointer transition-colors px-6 py-3.5"
-                onClick={() => handleSort('ID')}
+                onClick={() => handleSort('idMiscellaneous')}
               >
                 <div className="flex items-center whitespace-nowrap font-medium">
-                  ID {getSortIcon('ID')}
+                  ID {getSortIcon('idMiscellaneous')}
                 </div>
               </TableHead>
               <TableHead 
@@ -189,7 +219,7 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
                 onClick={() => handleSort('yesterday_flow')}
               >
                 <div className="flex items-center whitespace-nowrap font-medium">
-                  Previous Day Status {getSortIcon('yesterday_flow')}
+                  Previous Status {getSortIcon('yesterday_flow')}
                 </div>
               </TableHead>
               <TableHead 
@@ -197,31 +227,43 @@ export function WateringTable({ initialData, onRefresh }: WateringTableProps) {
                 onClick={() => handleSort('today_flow')}
               >
                 <div className="flex items-center whitespace-nowrap font-medium">
-                  Latest Day Status {getSortIcon('today_flow')}
+                  Latest Status {getSortIcon('today_flow')}
                 </div>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedData.length > 0 ? (
+            {sortedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  <div className="flex flex-col items-center justify-center text-gray-500 py-8">
+                    <FaWater className="text-3xl text-gray-300 mb-2" />
+                    <p>No watering schedules found</p>
+                    <button 
+                      onClick={handleRefresh}
+                      className="mt-4 px-3 py-1.5 bg-green-50 text-green-600 rounded-full text-sm flex items-center gap-2 hover:bg-green-100 transition-colors"
+                    >
+                      <FaSync className={refreshing ? 'animate-spin' : ''} />
+                      <span>Refresh Data</span>
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
               sortedData.map((row) => (
                 <TableRowMemo
-                  key={row.ID}
+                  key={row.idMiscellaneous}
                   row={row}
                   getStatusBadge={getStatusBadge}
                   formatTime={formatTime}
                 />
               ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                  No watering schedules found
-                </TableCell>
-              </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
+      {/* Subtle gradient overlay at the bottom for aesthetic flair */}
+      <div className="h-6 bg-gradient-to-t from-white to-transparent w-full pointer-events-none absolute bottom-0"></div>
     </div>
-  );
-} 
+  )
+}

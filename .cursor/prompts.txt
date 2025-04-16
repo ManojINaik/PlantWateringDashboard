@@ -28,11 +28,12 @@ Based on the data provided in the sources, here's a breakdown of the different c
 
     *   A `getconfigrun` entry with a "success" status is followed by a `speedreading` entry [e.g., 2, 3, 4].
     *   The `speedreading` entry contains "W0" or "W1" readings, indicating the start or stop of a speedreading activity, along with additional parameters [e.g., 2, 3, 4].
-    *   The `speedreading` entries include timestamps and BV (Base Vocabulary) values [e.g., 2, 3, 4].
+    *   The `speedreading` entries include timestamps and BV (Battery Voltage) values [e.g., 2, 3, 4].
+
 *   **Case 2: Direct Speedreading Initiation**
 
     *   A `speedreading` entry occurs directly, without a preceding `getconfigrun` entry [e.g., 1, 55].
-    *   These entries typically have only a BV (Base Vocabulary) value, and lack the "W0/W1" readings and associated parameters seen in Case 1 [e.g., 1, 55].
+    *   These entries typically have only a BV (Battery Voltage) value, and lack the "W0/W1" readings and associated parameters seen in Case 1 [e.g., 1, 55].
 *   **Case 3: Speedreading with E2 Parameter**
 
     *   A `getconfigrun` entry with a "success" status is followed by a `speedreading` entry.
@@ -41,9 +42,9 @@ Based on the data provided in the sources, here's a breakdown of the different c
 
     *   A `getconfigrun` entry with a "success" status is followed by a `speedreading` entry.
     *   The `speedreading` entry contains no "W0" or "W1" readings.
-    *   These entries typically have only a BV (Base Vocabulary) value.
+    *   These entries typically have only a BV (Battery Voltage) value.
 
-These cases represent different patterns of interaction with the speedreading application, reflecting variations in how speedreading sessions are initiated and configured.
+These cases represent different patterns of interaction with the database application, reflecting variations in how speedreading sessions are initiated and configured.
 
 
 Analysing the provided excerpts from "Confronting Challenges to Mental Health in the Black Community" alongside our conversation history reveals additional insights and nuances within the `miscellaneous_table` data.

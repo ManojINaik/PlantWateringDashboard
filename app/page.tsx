@@ -2,16 +2,16 @@
 
 import React from 'react';
 import { useEffect, useState, useRef } from "react";
-import { FaLeaf, FaCalendar, FaClock, FaTint, FaPlus, FaSearch, FaEllipsisV } from "react-icons/fa";
+import { FaLeaf, FaWater, FaClock, FaThermometerHalf, FaCheck } from "react-icons/fa";
 import Sidebar from "@/components/Sidebar";
-import Card3D from "@/components/Card3D";
 import dynamic from 'next/dynamic';
 import SearchBar from "@/components/SearchBar";
 import { WateringTable } from "@/components/WateringTable";
 import TimeDate from '@/components/TimeDate';
+import Card3D from "@/components/Card3D";
 
 interface WateringData {
-  ID: number;
+  idMiscellaneous: number;
   active: boolean;
   duration: string;
   schedule_time: string;
@@ -71,8 +71,8 @@ export default function Home() {
     isMounted.current = true;
     fetchData();
     
-    // Set up interval for periodic updates - refresh every 10 minutes
-    intervalRef.current = setInterval(fetchData, 600000);
+    // Set up interval for periodic updates - refresh every 5 minutes
+    intervalRef.current = setInterval(fetchData, 300000);
     
     // Cleanup function
     return () => {
@@ -81,7 +81,7 @@ export default function Home() {
         clearInterval(intervalRef.current);
       }
     };
-  }, []); // Empty dependency array since we want this to run once on mount
+  }, []);
 
   const handleSearch = (term: string) => {
     if (!term.trim()) {
@@ -92,133 +92,103 @@ export default function Home() {
     const lowerTerm = term.toLowerCase();
     const filtered = data.filter(
       (item) =>
-        item.ID.toString().includes(lowerTerm) ||
-        item.schedule_time.toLowerCase().includes(lowerTerm) ||
-        item.duration.toLowerCase().includes(lowerTerm) ||
-        item.yesterday_flow.toLowerCase().includes(lowerTerm) ||
-        item.today_flow.toLowerCase().includes(lowerTerm)
+        item.idMiscellaneous?.toString().includes(lowerTerm) ||
+        item.schedule_time?.toLowerCase().includes(lowerTerm) ||
+        item.duration?.toLowerCase().includes(lowerTerm) ||
+        item.yesterday_flow?.toLowerCase().includes(lowerTerm) ||
+        item.today_flow?.toLowerCase().includes(lowerTerm)
     );
     setFilteredData(filtered);
   };
 
-  // Calculate stats from actual data
-  const totalSchedules = data.length;
-  const activeSchedules = data.filter(item => item.active).length;
-  
-  // Calculate average duration (parse numeric value from "X min" format)
-  const averageDuration = data.length > 0 
-    ? (data.reduce((sum, item) => {
-        const minutes = parseInt(item.duration.replace(' min', ''), 10);
-        return isNaN(minutes) ? sum : sum + minutes;
-      }, 0) / data.length).toFixed(1)
-    : "0.0";
-    
-  // Count completed watering events for the latest day
-  const completedLatest = data.filter(item => item.today_flow === 'completed').length;
+  // Calculate summary data for cards
+  const totalSchedules = filteredData.length;
+  const activeSchedules = filteredData.filter(item => item.active).length;
+  const completedToday = filteredData.filter(item => item.today_flow === "completed").length;
+  const weatherEnabled = filteredData.filter(item => item.weather_enabled).length;
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50">
       <Sidebar />
       
       <main className="flex-1 p-10 relative ml-64">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[10%] right-[10%] w-[500px] h-[500px] bg-green-100/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-[10%] left-[5%] w-[400px] h-[400px] bg-green-100/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-[25%] right-[15%] w-[120px] h-[120px] bg-green-200/20 rounded-full blur-xl"></div>
-          <div className="absolute top-[60%] right-[25%] w-[80px] h-[80px] bg-green-200/20 rounded-full blur-xl"></div>
-          <div className="absolute top-[30%] left-[10%] w-[60px] h-[60px] bg-green-200/20 rounded-full blur-xl"></div>
-          <div className="absolute top-[80%] right-[30%] w-[40px] h-[40px] bg-green-300/20 rounded-full blur-xl"></div>
-        </div>
-
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3 relative animate-fadeIn">
-            <FaLeaf className="text-green-600" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-700 to-green-500">
-              Plant Watering Dashboard
-            </span>
-            <span className="absolute bottom-[-8px] left-0 w-24 h-1 bg-gradient-to-r from-green-500 to-transparent rounded"></span>
-          </h1>
-          
+        {/* Absolutely positioned sticky TimeDate */}
+        <div className="fixed right-12 top-6 z-50">
           <TimeDate />
         </div>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-3 relative animate-fadeIn">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-green-glow animate-pulse-soft">
+              <FaLeaf className="text-white text-xl" />
+            </div>
+            <div className="flex flex-col">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-700 to-green-500">
+                Plant Watering Dashboard
+              </span>
+              <div className="h-1 w-28 bg-gradient-to-r from-green-500 to-transparent rounded mt-1"></div>
+            </div>
+          </h1>
+          {/* Placeholder for TimeDate to avoid layout shift */}
+          <div style={{ width: 320, height: 56 }} />
+        </div>
 
-        <div className="flex flex-col mb-12 space-y-8">
-          {/* Action bar */}
-          <div className="flex items-center justify-between animate-slideUp">
+        {/* Sticky search bar container */}
+        <div className="sticky top-0 z-40 py-2 mb-8 animate-slideUp">
+          <div className="max-w-md">
             <SearchBar onSearch={handleSearch} />
-            
-            {/* <div className="flex space-x-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition-all">
-                <FaPlus className="text-sm" />
-                <span className="text-sm font-medium">Add Schedule</span>
-              </button>
-              
-              <button className="p-2 bg-white hover:bg-gray-50 text-gray-700 rounded-lg shadow-sm border border-gray-100 transition-all">
-                <FaEllipsisV className="text-sm" />
-              </button>
-            </div> */}
-          </div>
-          
-          {/* Info cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
-            <Card3D
-              icon={<FaCalendar className="text-white" />}
-              title="Total Schedules"
-              value={totalSchedules}
-              color="primary"
-            />
-            <Card3D
-              icon={<FaClock className="text-white" />}
-              title="Average Duration"
-              value={`${averageDuration} min`}
-              color="secondary"
-            />
-            <Card3D
-              icon={<FaTint className="text-white" />}
-              title="Completed (Latest)"
-              value={`${completedLatest}/${totalSchedules}`}
-              color="accent"
-            />
           </div>
         </div>
         
-        {/* Main content */}
-        <div className="glass-effect rounded-2xl p-6 shadow-soft-xl animate-fadeIn">
-          <div className="mb-4 flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <span className="w-2 h-6 bg-green-500 rounded-full"></span>
-              Watering Schedules
-            </h2>
-            
-            <div className="text-sm text-gray-500">
-              {loading ? "Loading data..." : `Showing ${filteredData.length} of ${data.length} schedules`}
-            </div>
-          </div>
-          
-          {loading && (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
-            </div>
-          )}
-          
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
-              <p>{error}</p>
-              <button 
-                onClick={fetchData}
-                className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-              >
-                Try Again
-              </button>
-            </div>
-          )}
-          
-          {!loading && !error && (
-            <WateringTable initialData={filteredData} onRefresh={fetchData} />
-          )}
+        {/* 3D Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 animate-fadeIn">
+          <Card3D 
+            icon={<FaWater className="text-blue-600 text-2xl" />}
+            title="Total Schedules"
+            value={totalSchedules.toString()}
+            color="secondary"
+          />
+          <Card3D 
+            icon={<FaClock className="text-green-600 text-2xl" />}
+            title="Active Schedules" 
+            value={activeSchedules.toString()}
+            color="primary"
+          />
+          <Card3D 
+            icon={<FaCheck className="text-purple-600 text-2xl" />}
+            title="Completed Today" 
+            value={completedToday.toString()}
+            color="accent"
+          />
         </div>
+        
+        {/* Main content */}
+        <div className="animate-fadeIn mb-8">
+          <WateringTable initialData={filteredData} onRefresh={fetchData} />
+        </div>
+        
+        {/* Error message */}
+        {error && (
+          <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-700 my-4 animate-fadeIn">
+            <p className="flex items-center gap-2">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"></path>
+              </svg>
+              {error}
+            </p>
+            <button 
+              onClick={fetchData}
+              className="mt-2 px-4 py-1 bg-white border border-red-200 text-red-600 rounded-lg text-sm hover:bg-red-50 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+        
+        {/* Footer */}
+        <footer className="mt-16 text-center text-gray-500 text-sm">
+          {/* <p>© 2023 GreenBalcony Plant Watering System. All rights reserved.</p> */}
+        </footer>
       </main>
     </div>
   );
-} 
+}

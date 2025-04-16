@@ -1,0 +1,182 @@
+userID,firstname,lastname,city,district,state,ActiveUser
+1,Citadel,Amethyst,Mangalore,"Dakshina Kannada",Karnataka,NULL
+2,"Trial device",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+3,"Adviti Lourdes",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+4,Admin,shiva,Mangalore,"dakshina Kannada",Karnataka,NULL
+5,AmirZohar,Zohar,Mangalore,"dakshina Kannada",Karnataka,NULL
+6,Shobha,Chandrahasa,Mangalore,Bagalkot,Karnataka,NULL
+7,Ashwini,shet,Mangalore,"dakshina Kannada",Karnataka,NULL
+8,Prabha,Shet,Davanagere,Davangere,Karnataka,NULL
+9,Sumathi,Shet,Udupi,Udupi,Karnataka,NULL
+10,Laxmi,"Narayana Shet",udupi,Udupi,Karnataka,NULL
+11,Jowil,D,Mangalore,"Dakshina Kannada",Karnataka,NULL
+12,Puneeth,K,Mangalore,"Dakshina Kannada",Karnataka,NULL
+13,"Thirteen ",Shet,Mangalore,"dakshina Kannada","Karnataka ",NULL
+14,"Fourteen ",Shet,Mangalore,"dakshina Kannada","Karnataka ",NULL
+15,ananth,Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+16,"Sixteen ",Shet,Mangalore,"dakshina Kannada","Karnataka ",NULL
+17,"Deepika Octa 1 ",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+18,"Deepika Octa 2 ",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+20,"Twenty ",Shet,Mangalore,"dakshina Kannada","Karnataka ",NULL
+21,"Deepika ",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+22,Dhruvin,Jasani,Mangalore,"Dakshina Kannada",Karnataka,NULL
+25,Mithun,Bhat,Mnagalore,"Dakshina Kannada",Karnataka,NULL
+31,TEST1,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+32,TEST2,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+33,TEST3,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+34,TEST4,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+35,TEST5,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+36,TEST6,shetq,Mangalore,"Dakshina Kannada",Karnataka,NULL
+37,TEST7,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+38,TEST8,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+52,CitadelHall,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+53,"St aloysius ",College,Mangalore,"Dakshina Kannada",Karnataka,1
+58,Mithun,Bhat,Mangalore,"Dakshina Kannada",Karnataka,NULL
+59,Kiran,Bangalore,Bangalore,"Bangalore Urban",Karnataka,NULL
+60,"Hegde Aunty",Bangalore,Bangalore,"Bangalore Urban",Karnataka,NULL
+64,Christopher,Dsouza,Udupi,Udupi,Karnataka,1
+101,gayathryanish,gayath,Mangalore,"Bangalore Urban",Karnataka,1
+102,onezerotwo,gayathryanish,Bangalore,"Dakshina Kannada",Karnataka,NULL
+103,onezerothree,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+104,onezerofour,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+105,onezerofive,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+106,Aman,Singhal,Bangalore,"Bangalore Urban",Karnataka,1
+107,onezeroseven,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+108,"Dr. HariVinood",S,Mangalore,"Dakshina Kannada",Karnataka,1
+109,"Dr. Prasad",Kini,Mangalore,"Dakshina Kannada",Karnataka,1
+110,50PCB-1,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+111,oneoneone,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+112,oneonetwo,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+113,Dr.HariVinood2,S,Mangalore,"Dakshina Kannada",Karnataka,1
+114,oneonefour,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+115,oneonefive,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+116,oneonesix@gmail.com,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+117,oneoneseven,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+118,oneoneeight,shiva,mangalore,"Dakshina Kannada",Karnataka,NULL
+119,oneonenine,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+120,onetwozero,shiva,Mangalore,"Dakshina Kannada",Karnataka,NULL
+121,onetwoone,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+122,onetwotwo,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+123,onetwothree,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+124,onetwofour,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+125,onetwofive,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+126,onetwosix,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+127,onetwoseven,shet,mangalore,"Dakshina Kannada",Karnataka,NULL
+128,onetwoeight,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+129,onetwonine,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+130,onethreezero,sget,Mangalore,"Dakshina Kannada",Karnataka,NULL
+501,Yogeel,Mawani,"Bangalore ","Dakshina Kannada",Karnataka,NULL
+503,Aditya,Bangalore,Bangalore,"Bangalore Urban",Karnataka,NULL
+505,"Holla - Extender",shet,Udupi,"Dakshina Kannada",Karnataka,1
+512,ELV,shet,Bengaluru,"Bangalore Urban",Karnataka,NULL
+513,"st aloysius",St,Mangalore,"Dakshina Kannada",Karnataka,NULL
+515,"KP Arun",Prabhu,Mangalore,"Dakshina Kannada",Karnataka,NULL
+516,Doctor,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+520,Doctortwo,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+521,Vijay,marka,Mysore,Mysore,Karnataka,NULL
+522,Raghavendra,Holla,Udupi,Udupi,Karnataka,NULL
+524,Raghavendra,Holla,Udupi,Udupi,Karnataka,1
+525,NidhiLand,India,Mangalore,"Dakshina Kannada",Karnataka,NULL
+526,"Vijay First",Marka,Mysore,Mysore,Karnataka,NULL
+528,"A L Rao",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+529,"Doctor Three",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+530,"Doctor Four",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+531,abharanG,shet,Mangalore,"Dakshina Kannada",Karnataka,1
+533,"Doctor Five",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+534,Intern,EC,Mangalore,"Dakshina Kannada",Karnataka,NULL
+536,Vineeth,KC,Palakkad,Palakkad,Kerala,NULL
+539,AbharanCOne,shet,Mangalore,"Dakshina Kannada",Karnataka,1
+540,SACDrip,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+541,"nOT WORKING bED",AA,Mangalore,"Dakshina Kannada",Karnataka,NULL
+542,AbharanBOne,Shop,Mangalore,"Dakshina Kannada",Karnataka,1
+543,AbharanCTwo,shet,Mangalore,"Dakshina Kannada",Karnataka,1
+545,545,shet,Mangalore,Bagalkot,Karnataka,NULL
+546,"Preeti old half inch",Srinivas,Mangalore,"Dakshina Kannada",Karnataka,NULL
+601,"Doctor - 6",shet,Mangalore,Bagalkot,Karnataka,NULL
+604,CitadelRoom,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+605,"Doctor 7",shet,Mangalore,Bagalkot,Karnataka,NULL
+609,"Abharan B2",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+610,Citadelcorridor,shet,Mangaluru,"Dakshina Kannada",Karnataka,NULL
+612,Dhruvin,Jasani,Mangalore,"Dakshina Kannada",Karnataka,1
+613,"UNO FINpower",shet,mangalore,"Dakshina Kannada",Karnataka,1
+624,SACMedicinal,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+625,"A L Rao Balcony1",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+627,ELV1,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+628,ELV2,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+629,ELV3,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+630,ELV4,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+633,"Holla New ",device1,Mangalore,"Dakshina Kannada",Karnataka,NULL
+634,ELV5,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+636,"Srinivas Hegde",New,Mangalore,"Dakshina Kannada",Karnataka,1
+637,"Holla New",device2,Mangalore,"Dakshina Kannada",Karnataka,NULL
+638,"Srinivas Hegde",New,Mangalore,"Dakshina Kannada",Karnataka,1
+639,"Srinivas old 1inch","Hegde ",Mangalore,"Dakshina Kannada",Karnataka,NULL
+640,AloysiusBed,shet,Mangalorea,"Dakshina Kannada",Karnataka,NULL
+644,"Citaldel Passage",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+646,AloyB.ed,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+647,"Umesh Rao - Weekly",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+648,"Umesh Rao - Daily - OLD",shet,Mangalore,Bagalkot,Karnataka,NULL
+649,"Holla Tentant Harsha",New,Mangalore,"Dakshina Kannada",Karnataka,NULL
+650,"Kateel 1 - WithoutFlowMeter",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+651,"Kateel 2 - WithFlowMeter",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+652,"Kateel 3 - Single Valve",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+653,"Holla House LTE",shet,Mangalore,Bagalkot,Karnataka,1
+654,"Umesh Rao",shet,Mangalore,"Dakshina Kannada",Karnataka,1
+655,"B.ed Aloysius",shet,Mangalore,Bagalkot,Karnataka,1
+656,Vijay,Kumar,BANGALORE,"Bangalore Urban",Karnataka,1
+825,SLS-Aloysius-ULLAL,shet,Mangalore,Bagalkot,Karnataka,NULL
+826,SLS-Aloysius-ULLAL2,shet,Mangalore,Bagalkot,Karnataka,NULL
+840,"SLS-UKSHATI OFFICE1",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+841,"SLS-UKSHATI OFFICE	2",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+842,"SLS-UKSHATI OFFICE	3",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+843,"SLS-UKSHATI OFFICE	4",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+844,"SLS-Nachi Test L",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+845,"SLS-Nachi Test M",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+846,"SLS-Nachi Test R",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+847,"SLS-Nachi Test S",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+848,SLS-Aloysius-Library,shet,Mangalore,Bagalkot,Karnataka,NULL
+849,SLS-Aloysius-Library2,shet,Mangalore,Bagalkot,Karnataka,NULL
+860,"Finpower Valve A",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+861,"Finpower Valve B",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+862,"Finpower Valve C",shet,mangalore,"Dakshina Kannada",Karnataka,NULL
+863,"Finpower Valve D",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+868,"SLS-SrinivasTest E",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+869,"SLS-SrinivasTest F",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+870,"SLS-SrinivasTest H",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+871,"SLS-SrinivasTest Q",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+872,GanapathiBhat1,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+873,GanapathiBhat2,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+874,GanapathiBhat3,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+875,GanapathiBhat4,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+876,GanapathiBhat5,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+877,GanapathiBhat6,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+878,Palemar7,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+879,Palemar8,J,Mangalore,"Dakshina Kannada",Karnataka,NULL
+880,eighteightzero,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+881,eighteightone,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+882,eighteighttwo,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+883,eighteightthree,s,Mangalore,"Dakshina Kannada",Karnataka,NULL
+884,eighteightfour,S,Mangalore,"Dakshina Kannada",Karnataka,NULL
+885,eighteightfive,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50000,"St Aloysius",College,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50001,Raghavendra,Holla,Udupi,"Dakshina Kannada",Karnataka,NULL
+50004,Abharan,Shop,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50005,Vikram,Shetty,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50006,testzone,shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50010,"Principal SAC ULLAL",Nandish,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50011,Ashok,Rao,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50013,Deepika,Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50017,ELV,Office,Bengaluru,"Bangalore Urban",Karnataka,NULL
+50018,Preethi,Srinivas,Manipal,"Dakshina Kannada",Karnataka,NULL
+50019,"Vasudev NEW ZONE",OCTA,Kateel,"Dakshina Kannada",Karnataka,NULL
+50021,"Library SAC Aloysius",shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50022,"UKSHATI OFFICE",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50023,"Nachi Testing",Shet,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50024,FINPOWER,SLS,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50026,SLS_Srinivas,Prabhu,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50027,Vasudev,kamath,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50028,Umesh,Rao,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50029,Ganapati,Bhat,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50030,Ashok,Pinto,Karkala,"Dakshina Kannada",Karnataka,NULL
+50031,Intern,S,Mangalore,"Dakshina Kannada",Karnataka,NULL
+50032,Dr.HariVinood,H,Mangalore,"Dakshina Kannada",Karnataka,NULL

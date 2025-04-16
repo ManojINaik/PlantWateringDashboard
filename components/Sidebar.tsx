@@ -1,28 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   FaHome, 
-  FaLeaf, 
-  FaChartLine, 
-  FaCog, 
-  FaCalendarAlt, 
-  FaSignOutAlt, 
-  FaChevronRight,
+  FaUsers,
+  FaUserCircle,
   FaBell,
-  FaUserCircle
+  FaChevronRight
 } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Sidebar = () => {
-  const [activeMenu, setActiveMenu] = useState('Dashboard');
+  const pathname = usePathname();
   
   const menuItems = [
     { id: 'Dashboard', label: 'Dashboard', icon: <FaHome className="text-xl" />, href: '/' },
-    // { id: 'Plants', label: 'Plants', icon: <FaLeaf className="text-xl" />, href: '#' },
+    { id: 'Active Users', label: 'Active Users', icon: <FaUsers className="text-xl" />, href: '/users' },
     // { id: 'Schedules', label: 'Schedules', icon: <FaCalendarAlt className="text-xl" />, href: '#' },
     // { id: 'Analytics', label: 'Analytics', icon: <FaChartLine className="text-xl" />, href: '#' },
     // { id: 'Settings', label: 'Settings', icon: <FaCog className="text-xl" />, href: '#' },
   ];
+
+  // Helper function to determine if the menu item is active
+  const isActive = (href: string) => {
+    if (href === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <aside className="w-64 h-screen bg-gradient-to-br from-green-800 to-green-900 text-white p-6 flex flex-col shadow-xl fixed top-0 left-0 overflow-y-auto z-50">
@@ -69,22 +74,21 @@ const Sidebar = () => {
             <li key={item.id}>
               <Link 
                 href={item.href}
-                onClick={() => setActiveMenu(item.id)}
                 className={`group flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${
-                  activeMenu === item.id 
+                  isActive(item.href) 
                     ? 'bg-green-600/30 text-white shadow-sm' 
                     : 'hover:bg-green-600/20 text-white/80 hover:text-white'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`transition-all ${activeMenu === item.id ? 'text-white' : 'text-green-400'}`}>
+                  <div className={`transition-all ${isActive(item.href) ? 'text-white' : 'text-green-400'}`}>
                     {item.icon}
                   </div>
                   <span className="text-sm">{item.label}</span>
                 </div>
                 
                 <FaChevronRight className={`text-xs opacity-0 transform transition-all ${
-                  activeMenu === item.id ? 'opacity-100' : 'group-hover:opacity-70'
+                  isActive(item.href) ? 'opacity-100' : 'group-hover:opacity-70'
                 }`} />
               </Link>
             </li>
